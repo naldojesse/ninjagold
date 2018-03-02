@@ -6,9 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.support.SessionStatus;
 //import javax.servlet.http.HttpSession;
 
 import java.util.ArrayList;
+
 import java.util.Hashtable;
 import java.util.TimeZone;
 
@@ -42,8 +44,8 @@ public class NinjagoldApplication {
 		return "index.jsp";
 	}
 
-	@RequestMapping(value="/gold", method=RequestMethod.POST)
-	public String process_gold(@ModelAttribute("user_gold") int user_gold, @ModelAttribute("log") ArrayList<Hashtable> log, @RequestParam(value="place") String place , ModelMap model) {
+	@RequestMapping(value="/process_gold", method=RequestMethod.POST)
+	public String process_gold(@ModelAttribute("user_gold") Integer user_gold, @ModelAttribute("log") ArrayList<Hashtable> log, @RequestParam(value="place") String place , ModelMap model) {
 
 //		if (!model.containsAttribute("user_gold")) {
 //			model.addAttribute("user_gold", 0);
@@ -56,7 +58,7 @@ public class NinjagoldApplication {
 		Hashtable<String, String> log_event = new Hashtable<>();
 
 		TimeZone tz = TimeZone.getDefault();
-		SimpleDateFormat formatter = new SimpleDateFormat("M d y h:m a");
+		SimpleDateFormat formatter = new SimpleDateFormat("MMM d y h:m a");
 		formatter.setTimeZone(tz);
 		Date cDate = new Date();
 		String dateFormatted = formatter.format(cDate);
@@ -65,25 +67,33 @@ public class NinjagoldApplication {
 		Random rand = new Random();
 		int n = 0;
 		if (place.equals("farm")) {
-			n = rand.nextInt(20) + 10;
+			n = rand.nextInt(10) + 10;
 		} else if (place.equals("cave")) {
-			n = rand.nextInt(10) + 5;
+			n = rand.nextInt(5) + 5;
 		} else if (place.equals("house")) {
-			n = rand.nextInt(5) + 2;
+			n = rand.nextInt(3) + 2;
 		} else if (place.equals("casino")) {
-			n = rand.nextInt(50) + -50;
+			n = rand.nextInt(100) + -50;
 		}
 
 		log_event.put("place", place);
 		log_event.put("gold_result", Integer.toString(n));
 
-		user_gold += n;
+        user_gold += n;
+		model.addAttribute("user_gold", user_gold);
 		log.add(log_event);
 
 		return "redirect:/";
 
 
 	}
+
+	@RequestMapping(value="/reset")
+    public String reset(SessionStatus status) {
+	    status.setComplete();
+	    return "index.jsp";
+
+    }
 
 
 
