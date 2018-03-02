@@ -60,8 +60,7 @@ public class NinjagoldApplication {
             n -= n * 2;
         }
 
-        user_gold += n;
-        return user_gold;
+        return n;
     }
 
 	@RequestMapping(value="/process_gold", method=RequestMethod.POST)
@@ -70,23 +69,24 @@ public class NinjagoldApplication {
 		Hashtable<String, String> log_event = new Hashtable<>();
 
 		TimeZone tz = TimeZone.getDefault();
-		SimpleDateFormat formatter = new SimpleDateFormat("MMM d y h:m a");
+		SimpleDateFormat formatter = new SimpleDateFormat("MMM d y hh:mm a");
 		formatter.setTimeZone(tz);
 		Date cDate = new Date();
 		String dateFormatted = formatter.format(cDate);
 		log_event.put("timestamp", dateFormatted);
 
-		int new_gold = pGold(user_gold, place);
+		int n = pGold(user_gold, place);
 
+		user_gold += n;
 
 		log_event.put("place", place);
-		log_event.put("gold_result", Integer.toString(new_gold));
+		log_event.put("gold_result", Integer.toString(n));
 
-		model.addAttribute("user_gold", new_gold);
+		model.addAttribute("user_gold", user_gold);
 
 		log.add(log_event);
 
-		if (new_gold < -300) {
+		if (user_gold < -300) {
 		    return "prison.jsp";
         }
 
