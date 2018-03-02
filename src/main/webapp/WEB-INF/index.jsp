@@ -40,6 +40,15 @@
     </form>
 </div>
 
+<div class="place">
+    <h1>Spa</h1>
+    <h2>(takes 5-20 gold)</h2>
+    <form action="/process_gold" method="post">
+        <input type="hidden" name="place" value="spa">
+        <input type="submit" value="Find Gold">
+    </form>
+</div>
+
 
 <a href="<c:url value="/reset"/>">Reset</a>
 

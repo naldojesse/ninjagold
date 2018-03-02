@@ -44,16 +44,28 @@ public class NinjagoldApplication {
 		return "index.jsp";
 	}
 
+	public int pGold(int user_gold, String place) {
+        Random rand = new Random();
+        int n = 0;
+        if (place.equals("farm")) {
+            n = rand.nextInt(10) + 10;
+        } else if (place.equals("cave")) {
+            n = rand.nextInt(5) + 5;
+        } else if (place.equals("house")) {
+            n = rand.nextInt(3) + 2;
+        } else if (place.equals("casino")) {
+            n = rand.nextInt(100) + -50;
+        } else if (place.equals("spa")) {
+            n = rand.nextInt(15) + 5;
+            n -= n * 2;
+        }
+
+        user_gold += n;
+        return user_gold;
+    }
+
 	@RequestMapping(value="/process_gold", method=RequestMethod.POST)
 	public String process_gold(@ModelAttribute("user_gold") Integer user_gold, @ModelAttribute("log") ArrayList<Hashtable> log, @RequestParam(value="place") String place , ModelMap model) {
-
-//		if (!model.containsAttribute("user_gold")) {
-//			model.addAttribute("user_gold", 0);
-//		}
-//		if (!model.containsAttribute("log")) {
-//			ArrayList<Hashtable> log = new ArrayList<>();
-//			model.addAttribute("log", log);
-//		}
 
 		Hashtable<String, String> log_event = new Hashtable<>();
 
@@ -64,24 +76,19 @@ public class NinjagoldApplication {
 		String dateFormatted = formatter.format(cDate);
 		log_event.put("timestamp", dateFormatted);
 
-		Random rand = new Random();
-		int n = 0;
-		if (place.equals("farm")) {
-			n = rand.nextInt(10) + 10;
-		} else if (place.equals("cave")) {
-			n = rand.nextInt(5) + 5;
-		} else if (place.equals("house")) {
-			n = rand.nextInt(3) + 2;
-		} else if (place.equals("casino")) {
-			n = rand.nextInt(100) + -50;
-		}
+		int new_gold = pGold(user_gold, place);
+
 
 		log_event.put("place", place);
-		log_event.put("gold_result", Integer.toString(n));
+		log_event.put("gold_result", Integer.toString(new_gold));
 
-        user_gold += n;
-		model.addAttribute("user_gold", user_gold);
+		model.addAttribute("user_gold", new_gold);
+
 		log.add(log_event);
+
+		if (new_gold < -300) {
+		    return "prison.jsp";
+        }
 
 		return "redirect:/";
 
@@ -94,7 +101,6 @@ public class NinjagoldApplication {
 	    return "index.jsp";
 
     }
-
 
 
 
